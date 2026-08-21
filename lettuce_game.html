@@ -224,7 +224,7 @@ html,body {
 #guideImage {
     position: fixed;
     left: 50%;
-    top: 33%;
+    top: 40%;
     width: 45vw;
     height: auto;
     transform: translate(-50%, -50%);
@@ -261,7 +261,7 @@ html,body {
     <div id="water"></div>
     <div id="count"> SPACE 0 / 20 </div>
 
-    <button id="washButton">space </button>
+    <button id="washButton">SPACEBAR </button>
 
     <div  id="result" class="result">
         <img id="resultImage">
@@ -296,7 +296,7 @@ function updateDeviceUI() {
 
     if (isMobile()) {
         /* 모바일 */
-        countText.textContent = `space ${count} / 20`;
+        countText.textContent = `SPACEBAR ${count} / 20`;
         washButton.style.display = "block";
 
         // CSS 위치를 그대로 사용
@@ -393,7 +393,7 @@ function washLettuce() {
 
     /* PC / 모바일 표시 */
     if (isMobile()) {
-        countText.textContent = `물 틀기 ${count} / 20`;
+        countText.textContent = `space ${count} / 20`;
     }
     else {
         countText.textContent = `SPACE ${count} / 20`;
