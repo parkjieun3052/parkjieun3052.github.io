@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>햄버거 만들기</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+#game {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-screen {
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+}
+
+#kitchen {
+    position: relative;
+    width: min(100vw, calc(100vh * 16 / 9));
+    height: min(100vh, calc(100vw * 9 / 16));
+    margin: auto;
+    overflow: hidden;
+}
+
+#kitchenImage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    display: block;
+}
+.touch-area {
+    position: absolute;
+    cursor: pointer;
+}
+
+#lettuceGame { background: #dff3df; }
+#grillGame { background: #e6e6e6; }
+#tomatoGame { background: #ffe0e0; }
+#finishGame { background: #fff4d6; }
+
+/* 1280×720 기준 클릭 영역 */
+#lettuceArea {
+    left: 6.5%;
+    top: 63%;
+    width: 21%;
+    height: 29%;
+}
+#lettuceGame, #grillGame, #tomatoGame {
+    position: relative;
+}
+
+#lettuceGame iframe, #grillGame iframe, #tomatoGame iframe {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+#lettuceGame .back-button {
+    z-index: 10000;
+}
+#grillArea {
+    left: 34%;
+    top: 28.5%;
+    width: 19%;
+    height: 26%;
+}
+
+#tomatoArea {
+    left: 77.5%;
+    top: 71%;
+    width: 20%;
+    height: 29%;
+}
+
+.game-screen {
+    display: none;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(25px, 4vw, 50px);
+    font-weight: bold;
+}
+
+
+#kitchenBackButton {
+    display: none;
+    position: absolute;
+    top: 4%;
+    left: 4%;
+    z-index: 9999;
+    padding: 1% 2%;
+    border: none;
+    border-radius: 10px;
+    background: white;
+    color: black;
+    font-size: 1.2vw;
+    cursor: pointer;
+}
+/* 양상추 게임 */
+#my_burger {
+    position: absolute;
+    left: 75%;
+    top: 11.25%;
+    width: 21.64%;
+    height: 37.22%;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+/* 내가 만든 햄버거 이미지 */
+#my_burger img {
+    width: 55%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+}
+/* 목표 햄버거 */
+.target-burger{
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    width: 28%;
+    /* 요소의 크기의 반 만큼 이동시켜서 정확히 가운데로 배치시킴 */
+    transform: translate(-50%, -50%);
+}
+/* 미니사이즈 목표 햄버거 */
+.mini-target-burger{
+    position: absolute;
+    width: 15%;
+    top: 33%;
+    left: 17%;
+    /* 요소의 크기의 반 만큼 이동시켜서 정확히 가운데로 배치시킴 */
+    transform: translate(-50%, -50%);
+}
+
+/* 미니게임 설명 이미지 */
+#gameGuide {
+    position: fixed;
+    inset: 0;
+    background: rgba(30, 30, 30, 0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+}
+
+#gameGuideImage {
+    width: 65vw;
+    max-width: 750px;
+    height: auto;
+    display: block;
+    opacity: 1;
+    z-index: 100000;
+}
+
+#finishGame {
+    position: relative;
+    width: min(100vw, calc(100vh * 16 / 9));
+    height: min(100vh, calc(100vw * 9 / 16));
+    margin: auto;
+    overflow: hidden;
+}
+
+#finishImage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    display: block;
+}
+/* 내가 만든 햄버거 */
+#resultBurger {
+    position: absolute;
+
+    left: 46%;
+    top: 62%;
+    transform: translate(-50%, -50%);
+
+    width: 30%;
+    height: 50%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+/* 내가 만든 햄버거 이미지 */
+#resultBurger img {
+    width: 55%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+}
+
+/* 성공 / 실패 배너 */
+#resultBanner {
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    transform: translate(-50%, -50%);
+    width: 25%;
+    height: auto;
+    object-fit: contain;
+    z-index: 200;
+}
+/* [class*=""] "" 안의 내용이 들어간 클래스들을 대상으로 한다는 뜻 */
+[class*="target-burger-"] > img{
+    width: 100%;
+    height: auto;
+    /* 이미지 태그가 div의 그기에 맞춰서 나올 수 있게 설정 */
+    object-fit: contain;
+    display: block;
+}
+
+[class*="mini-target-burger-"] > img{
+    width: 100%;
+    height: auto;
+    /* 이미지 태그가 div의 그기에 맞춰서 나올 수 있게 설정 */
+    object-fit: contain;
+    display: block;
+}
+
+@media (max-width: 600px) {
+    #kitchenImage {
+        object-fit: cover;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+    <!-- 선종범 : -> src 속성 상대경로, 이름 영어 조치해서 에러발생하지 않게 조치할 것 -->
+    <div id="kitchen">
+        <div></div>
+        <img id="kitchenImage" src="images/k1.png">
+
+        <button id="kitchenBackButton"
+                onclick="event.stopPropagation(); backKitchen();"> <!-- 이버튼을 클릭하면 부모(kitchen)에게 클릭을 전달하지말고 backkitchen 함수를 실행해-->
+            돌아가기
+        </button>
+
+        <div class="target-burger"></div>
+        <div class="mini-target-burger"></div>
+        
+        <div id="my_burger"></div> 
+
+        <div id="lettuceArea" class="touch-area"
+            onclick="openGame('lettuceGame')"></div>
+
+        <div id="grillArea" class="touch-area"
+            onclick="openGame('grillGame')"></div>
+
+        <div id="tomatoArea" class="touch-area"
+            onclick="openGame('tomatoGame')"></div>
+    </div>
+
+    <div id="gameGuide">
+        <img id="gameGuideImage" src="" alt="게임 방법">
+    </div>
+    
+    <div id="lettuceGame" class="game-screen">
+        <iframe src="lettuce_game.html"></iframe>   
+
+    </div>
+
+    <div id="grillGame" class="game-screen">
+        <iframe src="patty_game.html"></iframe>
+    </div>
+    
+    <div id="tomatoGame" class="game-screen">
+        <iframe src="tomato_game.html"></iframe>
+    </div>
+
+<div id="finishGame" class="game-screen">
+    <img id="finishImage" src="images/finish_img.png">
+
+    <!-- 내가 만든 햄버거 -->
+    <div id="resultBurger"></div>
+
+    <!-- 성공 / 실패 배너 -->
+    <img id="resultBanner" src="" alt="결과">
+
+    <button id="kitchenBackButton" onclick="location.reload()">시작화면으로</button>
+
+</div>
+
+</div>
+
+<script>
+
+// javascript 의 배열관련 편리한 함수들이 매우 많이 존재함 대표적으로 .pop(), .push(), .shift(), .unshift(), .splice() 확인해보면 해당 작업에 매우 유용할 듯
+
+const preppedIngredients = {
+    lettuce: false,
+    patty: false,
+    tomato: false
+};
+
+const ingredientImages = {
+    lettuce: "images/lettuce.png",
+    tomato: "images/tomato.png",
+    patty: "images/patty.png",
+    bread: "images/bread.png"
+};
+
+let kitchenNumber = 1;
+setTouchAreasEnabled(false);
+const kitchen = document.getElementById("kitchen");
+const image = document.getElementById("kitchenImage");
+// querySelector 클래스, 아이디 등으로 html 요소를 가져올 때 사용함.
+const targetBurger = document.querySelector(".target-burger")
+const miniTargetBurger = document.querySelector(".mini-target-burger")
+const kitchenBackButton = document.getElementById("kitchenBackButton");
+const gameGuide = document.getElementById("gameGuide");
+const gameGuideImage = document.getElementById("gameGuideImage");
+
+
+// 목표 햄버거 구성을 담을 배열
+let targetBurgerParts = []
+// 사용자가 만든 햄버거 담을 곳
+let myBurgerParts = [];
+
+// 랜덤버거 생성
+createRandomBurger();
+
+
+kitchen.onclick = () => {
+
+    if (kitchenNumber < 4) {
+        kitchenNumber++;
+
+        if (kitchenNumber === 3) {
+            showChild(targetBurger)
+        }
+
+        image.src = `images/k${kitchenNumber}.png`;
+        kitchenBackButton.style.display = "block";
+    }
+    if (kitchenNumber === 4) {
+        showChild(miniTargetBurger)
+        hiddenChild(targetBurger);
+        // 4단계에서만 미니게임 터치 활성화
+        setTouchAreasEnabled(true);
+    }
+    else {
+        // 1, 2, 3단계에서는 터치영역 비활성화
+        setTouchAreasEnabled(false);
+    }
+};
+
+
+let screenHistory = []; 
+
+/*미니게임 설명 이미지 3.5초만 나오게*/
+function showGameGuide(image) {
+    gameGuideImage.src = image;
+    gameGuide.style.display = "flex";
+    setTimeout(() => {
+        gameGuide.style.display = "none";
+    }, 3500);
+}
+
+/*미니게임설명 각 게임마다 변경하기*/
+function openGame(id) {
+    screenHistory.push(kitchenNumber);
+
+    kitchen.style.display = "none";
+
+    if (id === "lettuceGame") {
+        showGameGuide("images/lettcebord.png");
+    }
+    if (id === "tomatoGame") {
+        showGameGuide("images/tomatobord.png");
+    }
+    if (id === "grillGame") {
+        showGameGuide("images/pattybord.png");
+    }
+
+    document.getElementById(id).style.display = "flex";
+}
+
+
+// 미니게임 버튼 활성화
+//querySelectorAll() :  원하는 html 요소를 전부찾는 매서드
+//forEach() : 찾아온 요소를 하나씩 반복해서 처리하는 매서드
+function setTouchAreasEnabled(enabled) {
+    document.querySelectorAll(".touch-area").forEach(area =>
+    //touch-area라는 클래스를 가진 모든 요소를 찾아서 하나씩 가져온 다음, 각각의 클릭/터치 가능 여부를 바꿔줘
+        {area.style.pointerEvents = enabled ? "auto" : "none";
+    });
+}
+
+function back() {
+    // 함수().또다름함수() -> 이렇게 연달아 사용하는 것을 '함수 체이닝 방식'이라고 부름
+    document.querySelectorAll(".game-screen").forEach(game => {
+        game.style.display = "none";
+    });
+
+    kitchen.style.display = "block";
+    kitchenNumber = 4;
+    image.src = "images/k4.png";
+}
+// 4단계에서만 미니게임 버튼 눌리게  setTouchAreasEnabled(); 코드추가
+function backKitchen() {
+    if (kitchenNumber > 1) {
+        kitchenNumber--;
+    }
+
+    image.src = `images/k${kitchenNumber}.png`;
+
+    if (kitchenNumber === 1) {
+        kitchenBackButton.style.display = "none";
+        setTouchAreasEnabled(false);
+    }
+    if (kitchenNumber === 2){
+        hiddenChild(targetBurger)
+        hiddenChild(miniTargetBurger)
+        setTouchAreasEnabled(false);
+    }
+    if (kitchenNumber === 3){
+        hiddenChild(miniTargetBurger)
+        showChild(targetBurger)
+        setTouchAreasEnabled(false);
+    }
+    if (kitchenNumber === 4){
+        hiddenChild(targetBurger)
+        showChild(miniTargetBurger)
+        setTouchAreasEnabled(true);
+    }
+}
+
+function showIngredient(ingredient) {
+
+    const box = document.getElementById("my_burger");
+
+    if (!box) return;
+
+    // 처음 한 번만 빵 생성
+    if (!box.querySelector(".top-bun")) {
+
+        const topBun = document.createElement("img");
+        topBun.src = ingredientImages.bread;
+        topBun.className = "top-bun";
+
+        const bottomBun = document.createElement("img");
+        bottomBun.src = ingredientImages.bread;
+        bottomBun.className = "bottom-bun";
+
+        box.appendChild(topBun);
+        box.appendChild(bottomBun);
+    }
+
+    // 재료 이미지
+    const img = document.createElement("img");
+    img.src = ingredientImages[ingredient];
+    img.className = "ingredient";
+
+    // 아래 빵 위에 재료 넣기
+    box.insertBefore(img, box.querySelector(".bottom-bun"));
+}
+// 함수 이름 = () => {} : 표기 방식 설명
+// "함수 표현식 방식중 익명함수 표기방식"
+// python 에서는 lambda 익명함수 표기법과 비슷
+
+window.finishGame = function(ingredient) {
+
+    // 이미 성공한 재료면 다시 추가하지 않음
+    if (preppedIngredients[ingredient]) return;
+
+    preppedIngredients[ingredient] = true;
+
+    // 내가 만든 재료 순서 저장
+    myBurgerParts.push(ingredient);
+
+    // 성공한 재료 이미지 추가
+    showIngredient(ingredient);
+
+    // 주방으로 돌아가기
+    back();
+
+    // 3개 모두 성공했는지 확인
+    if (Object.values(preppedIngredients).every(value => value)) {
+        console.log("미션 순서:", targetBurgerParts);
+        console.log("내가 만든 순서:", myBurgerParts);
+        // 완성 화면 보여주기
+        showResult();
+    }
+};
+
+window.addEventListener("message", function(e) {
+    if (e.data && e.data.action === "finishGame") {
+        window.finishGame(e.data.ingredient);
+    }
+});
+
+
+function createRandomBurger(){
+    const parts = ["patty", "lettuce", "tomato"]
+    const target = []
+
+    while(parts.length > 0){
+        const index = Math.floor(Math.random() * parts.length);
+        const randompart = parts.splice(index, 1)[0];
+        target.push(randompart)
+    }   
+
+    // --- 지은 (+추가) 미션 순서 저장
+    targetBurgerParts = target;
+
+    // 플레이어가 만든 순서는 초기화
+    myBurgerParts = [];
+    // ----------
+
+    // innerHTML은 태그 내부의 HTML을 의미하는 속성.
+    // innerHTML의 내용이 태그 내부에 들어가게된다.
+    // map() 배열의 요소를 1개씩 훑으면서 지정된 동작을 실행하는 함수
+    // map() 안에 () =>{} 와 같은 형태로 함수를 인자로 전달함
+    // () => {} 에서 () 에 part를 적었는데 part는 target 배열에서 가져온 값 하나임.
+    targetBurger.innerHTML = 
+        `<div class="target-burger-bun" hidden="true">
+            <img src="images/bread.png" alt="이미지를 찾을 수 없습니다.">
+        </div>` + 
+        target.map(part => `
+        <div class="target-burger-${part}" hidden="true">
+            <img src="images/${part}.png">
+        </div>
+        `
+        ).join('') + 
+        `<div class="target-burger-bun" hidden="true">
+            <img src="images/bread.png">
+        </div>`
+
+    miniTargetBurger.innerHTML = 
+        `<div class="mini-target-burger-bun" hidden="true">
+            <img src="images/bread.png" alt="이미지를 찾을 수 없습니다.">
+        </div>` + 
+        target.map(part => `
+        <div class="mini-target-burger-${part}" hidden="true">
+            <img src="images/${part}.png">
+        </div>
+        `
+        ).join('') + 
+        `<div class="mini-target-burger-bun" hidden="true">
+            <img src="images/bread.png">
+        </div>`
+}
+// target의 자식 요소들의 hidden을 true로 바꿔주는 함수
+function hiddenChild(target){
+    // ... 은 전개 연산자로 배열의 요소를 풀어서 전달하는 연산자임
+    // 그래서 아래 코드는 target.children 배열의 내용을 풀어서 [] 다시 배열로 감싼 형태
+    // 굳이 이렇게 다시 배열을 만든 이유는 children은 배열이 아니라 유사 배열 객체(array-like object)이기 때문
+    // 유사 객체 배열은 배열에서 사용할 수 있는 map 등의 함수를 사용할 수 없어서 이렇게 함.
+    const childrens = [...target.children]
+    childrens.map(children=>{
+        children.hidden = true
+    })
+}
+// target의 자식 요소들의 hidden을 false로 바꿔주는 함수
+function showChild(target){
+    const childrens = [...target.children]
+    childrens.map(children=>{
+        children.hidden = false
+    })
+}
+
+function showResultBurger() {
+
+    const resultBurger = document.getElementById("resultBurger");
+
+    resultBurger.innerHTML = "";
+
+    // 빵
+    const topBun = document.createElement("img");
+    topBun.src = ingredientImages.bread;
+    resultBurger.appendChild(topBun);
+
+    // 내가 만든 재료 순서대로 추가
+    myBurgerParts.forEach(ingredient => {
+
+        const img = document.createElement("img");
+
+        img.src = ingredientImages[ingredient];
+
+        resultBurger.appendChild(img);
+    });
+
+    // 아래 빵
+    const bottomBun = document.createElement("img");
+    bottomBun.src = ingredientImages.bread;
+    resultBurger.appendChild(bottomBun);
+}
+
+function showResult() {
+
+    kitchen.style.display = "none";
+
+    const finishScreen = document.getElementById("finishGame");
+    finishScreen.style.display = "flex";
+
+    // 내가 만든 햄버거 표시
+    showResultBurger();
+
+    // 미션 순서와 내가 만든 순서 비교
+    const isCorrect =
+        targetBurgerParts.length === myBurgerParts.length &&
+        targetBurgerParts.every((ingredient, index) => {
+            return ingredient === myBurgerParts[index];
+        });
+
+    // 결과 배너
+    const resultBanner = document.getElementById("resultBanner");
+
+    if (isCorrect) {
+        resultBanner.src = "images/perfect.png";
+    } else {
+        resultBanner.src = "images/tryagain.png";
+    }
+}
+</script>
+
+</body>
+</html>

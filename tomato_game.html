@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+
+</head>
+<body>
+    <div id="root">
+        <div class="mainframe display-flex flex-align-center flex-direction-col gap-30px">
+            <div class="cooking-table border-1px-solid-black display-flex flex-align-center border-radius-20px">
+                <div class="cutting-board border-1px-solid-black display-flex flex-align-center border-radius-20px">
+                    <div class="tomato targetTomato position-relative z-index-3" hidden="true">
+                        <img src="images/tomato_ingame.png" alt="">
+                    </div>
+                    <img class="knife targetKnife position-relative z-index-3" src="images/knife.png" alt="" hidden="true">
+                </div>
+            </div>
+            <div class="table border-1px-solid-black display-flex flex-align-center border-radius-20px gap-30px">
+                <div class="bowl border-1px-solid-black border-radius-20px" onclick="pickUpTomato()">
+                    <div class="tomato">
+                        <img src="images/tomato_ingame.png" alt="">
+                    </div>
+                    <div class="tomato">
+                        <img src="images/tomato_ingame.png" alt="">
+                    </div>
+                    <div class="tomato">
+                        <img src="images/tomato_ingame.png" alt="">
+                    </div>
+                    <div class="tomato">
+                        <img src="images/tomato_ingame.png" alt="">
+                    </div>
+                </div>
+                <img class="knife" src="images/knife.png" alt="" onclick="pickUpKnife()">
+            </div>
+            <div class="cooking-table-leg border-1px-solid-black display-flex flex-align-center border-radius-20px">
+
+            </div>
+            <div class="ui-panel border-1px-solid-black border-radius-20px">
+                <div class="timmer ui-content display-flex gap-5x flex-align-center border-radius-20px">
+                    <div class="icon display-flex flex-align-center bg-color-414551 border-radius-20px">
+                        <img src="images/time_icon.png">
+                    </div>
+                    <div class="info time bg-color-414551 container-type-inline-size border-radius-20px display-flex flex-align-center font-bold font-size font-color-white">
+                        <span class="font-size-follow-parent-w">00:30<span>
+                    </div>
+                </div>
+                <div class="cutting-count ui-content display-flex gap-5x flex-align-center border-radius-20px">
+                    <div class="icon display-flex flex-align-center bg-color-414551 border-radius-20px">
+                        <img src="images/knife_icon.png">
+                    </div>
+                    <div class="info count bg-color-414551 container-type-inline-size border-radius-20px display-flex flex-align-center font-bold font-color-white">
+                        <span class="font-size-follow-parent-w">00/10<span>
+                    </div>
+                </div>
+            </div>
+            <div class="messagebox display-flex flex-align-center border-radius-20px container-type-size" hidden="true">
+                <span class="message font-bold font-szie-follow-parent-h"></span>
+            </div>
+            <div class="result">
+                <img>
+                <button></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const timer = document.querySelector(".timer")
+        const time = document.querySelector(".time").querySelector("span")
+        const tomatoBowl = document.querySelector(".bowl")
+        const targetTomato = document.querySelector(".targetTomato")
+        const targetKnife = document.querySelector(".targetKnife")
+        const tomatoTable = document.querySelector(".table")
+        const knifeOnTable = tomatoTable.querySelector(".knife")
+        const messagebox = document.querySelector(".messagebox")
+        const message = document.querySelector(".message")
+        const knifeCount = document.querySelector(".count").querySelector("span")
+        const result = document.querySelector(".result")
+        const image = result.querySelector("img")
+        const button = result.querySelector("button")
+
+
+        let timeInterval
+
+        let timeleft = 5;
+        let targetCount = 5;
+        let count = 0;
+        let tomatoReady = false;
+        let start = false;
+        
+        init()
+        
+        function init(){
+            timeleft = 5;
+            targetCount = 5;
+            count = 0;
+            tomatoReady = false;
+            start = false;
+            targetTomato.hidden = true
+            targetKnife.hidden = true
+            knifeOnTable.style.visibility = "visible";
+            result.style.display = "none";
+
+            updateTimer()
+            updateKnifeCount()
+            setMessage("토마토를 눌러서 도마로 옮겨주세요.")
+        }
+        
+        function setMessage(text){
+            messagebox.style.display = "flex"
+            message.textContent = text
+        }
+
+        function updateTimer(){
+            // Math.floor는 나눗셈 후 소수점을 버림
+            const minute = Math.floor(timeleft/60);
+            const second = timeleft%60;
+            
+            const formattedMinute = String(minute).padStart(2, '0');
+            const formattedSecond = String(second).padStart(2, '0');
+
+            time.textContent = `${formattedMinute}:${formattedSecond}`;
+        }
+
+        function updateKnifeCount(){
+            const formattedCount = String(count).padStart(2, '0');
+            const formattedTargetCount = String(targetCount).padStart(2, '0');
+
+            knifeCount.textContent = `${formattedCount}/${formattedTargetCount}`;
+        }
+
+        function pickUpTomato(){
+            targetTomato.hidden = false;
+            tomatoReady = true;
+            setMessage("칼을 눌러서 도마로 옮겨주세요.")
+        }
+        
+        function pickUpKnife(){
+            if(tomatoReady != true){
+                return;
+            }
+            
+            targetKnife.hidden = false;
+            knifeOnTable.style.visibility = "hidden";
+            start = true;
+            
+            setMessage("스페이스바를 눌러서 토마토를 써세요!(모바일은 터치)")
+            startTimer()
+        }
+        
+        function startTimer(){
+            timeInterval = setInterval(()=>{
+                timeleft--;
+                updateTimer()
+                if (timeleft <= 0){
+                    showResult()
+                }
+            }, 1000)
+        }
+        
+        // 키보드를 눌렀을 때 이벤트를 할당
+        document.addEventListener('keydown', (e)=>{
+            // 눌린 키보드가 스페이스바일 경우
+            if(e.code=="Space" && !event.repeat){
+                // 스페이스바의 기본 동작을 막음. 예) 스크롤
+                messagebox.style.display = "none"
+                e.preventDefault();
+                if(start){
+                    if(count<targetCount){
+                        console.log("진입")
+                        count++;
+                        updateKnifeCount()
+                        if(count === targetCount)
+                            showResult()
+                    }
+                }
+            }
+        })
+
+        document.addEventListener('pointerup', (e) => {
+            if(e.pointerType === "touch"){
+                messagebox.style.display = "none"
+                e.preventDefault();
+                if(start){
+                    if(count<targetCount){
+                        console.log("진입")
+                        count++;
+                        updateKnifeCount()
+                        if(count === targetCount)
+                            showResult()
+                    }
+                }
+            }
+        })
+
+
+        function showResult(){
+            clearInterval(timeInterval)
+            result.style.display = "flex"
+            // 성공
+            if (count === targetCount && timeleft > 0){
+                image.src = "images/perfect.png"
+                button.textContent = "화면 나가기"
+                button.onclick = ()=>{
+                    window.parent.postMessage({ action: "finishGame", ingredient: "tomato" }, "*");
+                }
+            }
+            // 실패
+            else{
+                image.src = "images/tryagai.png";
+                button.textContent = "다시하기";
+                button.onclick = ()=>{
+                    init()
+                }
+            }
+        }
+    </script>
+</body>
+</html>

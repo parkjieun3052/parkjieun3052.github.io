@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+
+</head>
+<body>
+    <div id="root">
+        <div class="mainframe display-flex flex-align-center flex-direction-col gap-30px">
+            <div class="gauge">
+                <div class="gauge-fill"></div>
+                <div class="target-zone"></div>
+            </div>
+            <div class="grill border-1px-solid-black display-flex flex-direction-col flex-align-center border-radius-20px">
+                <div class="grill-wall">
+
+                </div>
+                <div class="grill-inside display-flex flex-align-center">
+                    <div class="target-patty" hidden="true">
+                        <img src="images/raw_patty.png">
+                    </div>
+                    <div class="target-patty-brown" hidden="true"> 
+                        <img src="images/yummy_patty.png">
+                    </div>
+                    <div class="target-patty-burned" hidden="true">
+                        <img src="images/burned_patty.png">
+                    </div>
+                </div>
+            </div>
+            <div class="table border-1px-solid-black display-flex flex-align-center border-radius-20px gap-30px">
+                <div class="tool display-flex">
+                    <img src="images/flipper.png" onclick="pickupFlipper()">
+                    <img src="images/tongs.png">
+                </div>
+                <div class="bowl border-radius-20px">
+                    <div class="bun-top">
+                        <img src="images/bun_top.png">
+                    </div>
+                    <div class="bun-top">
+                        <img src="images/bun_top.png">
+                    </div>
+                    <div class="bun-bottom">
+                        <img src="images/bun_bottom.png">
+                    </div>
+                    <div class="bun-bottom">
+                        <img src="images/bun_bottom.png">
+                    </div>
+                </div>
+                <div class="bowl border-radius-20px" onclick="pickupPatty()">
+                    <div class="patty">
+                        <img src="images/raw_patty.png">
+                    </div>
+                    <div class="patty">
+                        <img src="images/raw_patty.png">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="messagebox display-flex flex-align-center border-radius-20px container-type-size" hidden="true">
+                <span class="message font-bold font-szie-follow-parent-h"></span>
+            </div>
+            <div class="result">
+                <img>
+                <button></button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const gaugeFill = document.querySelector('.gauge-fill');
+        const targetPatty = document.querySelector(".target-patty")
+        const targetPattyBrown = document.querySelector(".target-patty-brown")
+        const targetPattyBurned = document.querySelector(".target-patty-burned")
+        const messagebox = document.querySelector(".messagebox")
+        const message = document.querySelector(".message")
+        const result = document.querySelector(".result")
+        const image = result.querySelector("img")
+        const button = result.querySelector("button")
+
+        let gaugeValue = 0;
+        let animationId;
+        const speed = 0.2;
+        const zoneStart = 70;
+        const zoneEnd = 90;
+        let gaugeStart = false;
+
+        const observerCallback = (mutationList, observer)=>{
+            for(const mutation of mutationList){
+                if(mutation.type == "attributes"){
+                    if(gaugeFill.style.height === "100%"){
+                        cancelAnimationFrame(animationId)
+                        showResult()
+                    }
+                }
+            }
+        }
+
+        const gaugeObserver = new MutationObserver(observerCallback)
+
+        gaugeObserver.observe(gaugeFill, {
+            attributes: true,
+            attributeFilter: ['style']
+        })
+
+        init()
+        
+        function init(){
+            gaugeValue = 0;
+            gaugeStart = false;
+
+            targetPatty.hidden = true;
+            targetPattyBrown.hidden = true;
+            targetPattyBurned.hidden = true;
+            result.style.display = "none";
+            gaugeFill.style.height = "0%"
+
+            setMessage("패티를 눌러서 그릴에 올려주세요.")
+        }
+
+        function setMessage(text){
+            // display의 값으로 메시지 박스의 표시를 제어 flex는 보이고, none은 안보임
+            // hidden을 사용하지 않은 이유는 디스플레디 속성이 있으면 hidden이 무시되기 때문.
+            messagebox.style.display = "flex"
+            message.textContent = text
+        }
+
+        function pickupPatty(){
+            targetPatty.hidden = false
+            setMessage("뒤집개를 눌러서 조리를 시작하세요.")
+        }
+        
+        function pickupFlipper(){
+            setMessage("좌측 게이지가 목표 구간에 들어가면 스페이스바를 누르세요!(모바일은 터치)")
+            // 게이지 애니메이션 시작
+            if(!gaugeStart){
+                animationId = requestAnimationFrame(updateGauge)
+                gaugeStart = true
+            }
+        }
+
+        // 게이지 애니메이션
+        function updateGauge(){
+            gaugeValue += speed
+            gaugeFill.style.height = gaugeValue+ "%"
+            
+            if(gaugeValue >= zoneStart && gaugeValue <= zoneEnd ){
+                targetPatty.hidden = true
+                targetPattyBrown.hidden = false
+            }
+            if(gaugeValue > zoneEnd){
+                targetPattyBrown.hidden = true
+                targetPattyBurned.hidden = false
+            }
+
+            // 애니메이션을 부드럽게 실행기켜 주는 함수
+            animationId = requestAnimationFrame(updateGauge);
+        }
+
+        function showResult(){
+            result.style.display = "flex"
+            // 성공
+            if(gaugeValue >= zoneStart && gaugeValue <= zoneEnd ){
+                image.src = "images/perfect.png"
+                button.textContent = "화면 나가기"
+                button.onclick = ()=>{
+                    window.parent.postMessage({ action: "finishGame", ingredient: "patty" }, "*");
+                }
+            }
+            // 실패
+            else{
+                image.src = "images/tryagain.png";
+                button.textContent = "다시하기";
+                button.onclick = ()=>{
+                    init()
+                }
+            }
+        }
+
+        document.addEventListener('keydown', (e)=>{
+            if(e.code=="Space" && gaugeStart){
+                e.preventDefault();
+                // 애니메이션을 종료하는 함수.
+                cancelAnimationFrame(animationId)
+                showResult()
+            }
+        })
+        
+        document.addEventListener('pointerup', (e) => {
+            if(e.pointerType === "touch" && gaugeStart){
+                cancelAnimationFrame(animationId)
+                showResult()
+            }
+        })
+
+    </script>
+</body>
+</html>
