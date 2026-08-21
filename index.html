@@ -31,6 +31,8 @@ html, body {
     position: relative;
     align-items: center;
     justify-content: center;
+    font-size: clamp(25px, 4vw, 50px);
+    font-weight: bold;
 }
 
 #kitchen {
@@ -97,18 +99,24 @@ html, body {
     height: 29%;
 }
 
-.game-screen {
-    display: none;
-    position: relative;
-    align-items: center;
-    justify-content: center;
-    font-size: clamp(25px, 4vw, 50px);
-    font-weight: bold;
-}
 
-
+/* 돌아가기 버튼*/
 #kitchenBackButton {
     display: none;
+    position: absolute;
+    top: 4%;
+    left: 4%;
+    z-index: 9999;
+    padding: 1% 2%;
+    border: none;
+    border-radius: 10px;
+    background: white;
+    color: black;
+    font-size: 1.2vw;
+    cursor: pointer;
+}
+/*시작점으로 돌아가기 버튼*/
+#finishBackButton {
     position: absolute;
     top: 4%;
     left: 4%;
@@ -313,7 +321,7 @@ html, body {
     <!-- 성공 / 실패 배너 -->
     <img id="resultBanner" src="" alt="결과">
 
-    <button id="kitchenBackButton" onclick="location.reload()">시작화면으로</button>
+    <button id="finishBackButton" onclick="location.reload()">시작화면으로</button>
 
 </div>
 
