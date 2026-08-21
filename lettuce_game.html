@@ -203,23 +203,17 @@ html,body {
     touch-action: manipulation;
 }
 #washButton:active {
-    transform:
-        translateX(-50%)
-        scale(0.95);
+    transform: translateX(-50%) scale(0.95);
 }
 
-
-@media (max-width: 900px) {
+@media (max-width: 600px) {
     /* 모바일에서는 물 버튼 표시 */
-    #washButton {
-        display: block;
-    }
+    #washButton {display: block;}
     /* 모바일 양상추 크기 */
     #lettuceDrag {
         width: 30%;
         height: 25%;
     }
-}
     /* 횟수 */
     #count {
         left: 5%;
@@ -250,16 +244,8 @@ html,body {
         border-radius: 2%;
         font-size: 2.2cqw;
     }
-/* 모바일 가로모드 */
-@media (max-height: 500px) {
-    #washButton {
-        display: block;
-        bottom: 2%;
-        width: 22%;
-        height: 14%;
-        font-size: 2.5cqw;
-    }
 }
+
 </style>
 </head>
 
@@ -306,15 +292,20 @@ let dragging = false;
 let leaves = [];
 
 /*모바일인지 확인 */
-function isMobile() { return window.innerWidth <= 900 || window.innerHeight <= 600;}
-
+function isMobile() {return window.innerWidth <= 1024 &&  window.matchMedia("(pointer: coarse)").matches;
+}
 /*초기 화면 설정 */
 function updateDeviceUI() {
 
     if (isMobile()) {
         /* 모바일 */
         countText.textContent = `물 틀기 ${count} / 20`;
-        washButton.style.display = "block";
+        if (isMobile()) { 
+            washButton.style.display = "block";
+        }
+        else {
+            washButton.style.display = "none";
+        }        
         guideImage.style.left ="50%";
         guideImage.style.top ="auto";
 
