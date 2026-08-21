@@ -298,15 +298,7 @@ function updateDeviceUI() {
     if (isMobile()) {
         /* 모바일 */
         countText.textContent = `물 틀기 ${count} / 20`;
-        if (isMobile()) { 
-            washButton.style.display = "block";
-        }
-        else {
-            washButton.style.display = "none";
-        }        
-        guideImage.style.left ="50%";
-        guideImage.style.top ="auto";
-
+        washButton.style.display = "block";        
     } else {
         /* PC */
         countText.textContent = `SPACE ${count} / 20`;
