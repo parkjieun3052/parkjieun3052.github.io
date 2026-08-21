@@ -171,8 +171,11 @@ html, body {
 
 /* 미니게임 설명 이미지 */
 #gameGuide {
-    position: fixed;
-    inset: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
     background: rgba(30, 30, 30, 0.6);
     display: none;
     align-items: center;
@@ -181,12 +184,10 @@ html, body {
 }
 
 #gameGuideImage {
-    width: 65vw;
-    max-width: 750px;
+    width: 65%;
     height: auto;
+    max-width: 750px;
     display: block;
-    opacity: 1;
-    z-index: 100000;
 }
 
 #finishGame {
