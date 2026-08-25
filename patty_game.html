@@ -51,10 +51,10 @@
                 </div>
                 <div class="bowl border-radius-20px" onclick="pickupPatty()">
                     <div class="patty">
-                        <img src="images/raw_patty.png">
+                        <img src="images/raw_patty.png" draggable="true">
                     </div>
                     <div class="patty">
-                        <img src="images/raw_patty.png">
+                        <img src="images/raw_patty.png" draggable="true">
                     </div>
                 </div>
             </div>
@@ -78,6 +78,7 @@
         const result = document.querySelector(".result")
         const image = result.querySelector("img")
         const button = result.querySelector("button")
+        const grillInside = document.querySelector(".grill-inside")
 
         let gaugeValue = 0;
         let animationId;
@@ -193,6 +194,17 @@
                 showResult()
             }
         })
+
+        grillInside.addEventListener('dragover', (e)=>{
+            e.preventDefault();
+        })
+
+        grillInside.addEventListener('drop', (e)=>{
+            e.preventDefault();
+            targetPatty.hidden = false
+            setMessage("뒤집개를 눌러서 조리를 시작하세요.")
+        })
+
 
     </script>
 </body>
