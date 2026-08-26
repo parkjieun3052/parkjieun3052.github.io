@@ -507,8 +507,10 @@ function showIngredient(ingredient) {
 window.finishGame = function(ingredient) {
 
     // 이미 성공한 재료면 다시 추가하지 않음
-    if (preppedIngredients[ingredient]) return;
-
+    if (preppedIngredients[ingredient]) {
+        back()
+        return;
+    }
     preppedIngredients[ingredient] = true;
 
     // 내가 만든 재료 순서 저장
