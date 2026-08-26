@@ -80,7 +80,7 @@
         const result = document.querySelector(".result")
         const image = result.querySelector("img")
         const button = result.querySelector("button")
-
+        const cuttingBoard = document.querySelector(".cutting-board")
 
         let timeInterval
 
@@ -105,7 +105,7 @@
 
             updateTimer()
             updateKnifeCount()
-            setMessage("토마토를 눌러서 도마로 옮겨주세요.")
+            setMessage("토마토를 드래그해서 도마로 옮겨주세요.")
         }
         
         function setMessage(text){
@@ -216,6 +216,15 @@
                 }
             }
         }
+
+        cuttingBoard.addEventListener("dragover", (e)=>{
+            e.preventDefault()
+        })
+
+        cuttingBoard.addEventListener("drop", (e)=>{
+            e.preventDefault()
+            pickUpTomato()
+        })
     </script>
 </body>
 </html>
