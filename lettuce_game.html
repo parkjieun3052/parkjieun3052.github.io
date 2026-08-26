@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <title>양상추 게임</title>
-
-
+<link rel="stylesheet" href="lettuce_game.css">
 </head>
 
 <body>
@@ -240,30 +239,11 @@ function showResult(success) {
         : "다시하기";
 
     result.style.display ="flex";
-
+    
+    // 화면 나가기 버튼
     button.onclick = () => {
         if (success) {
-            window.parent.postMessage(
-                {
-                    action: "finishGame",
-                    ingredient: "lettuce"
-                },
-                "*"
-            );
-            try {
-                if (
-                    typeof window
-                        .parent
-                        .finishGame ===
-                    "function"
-                ) {
-                    window.parent.finishGame(
-                        "lettuce"
-                    );
-                }
-            } catch (e) {
-                /* 무시 */
-            }
+            window.parent.back()
         } else {
             reset();
         }
