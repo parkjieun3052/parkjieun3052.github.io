@@ -239,11 +239,11 @@ function showResult(success) {
         : "다시하기";
 
     result.style.display ="flex";
-    
+
     // 화면 나가기 버튼
     button.onclick = () => {
         if (success) {
-            window.parent.back()
+            window.parent.finishGame("lettuce");
         } else {
             reset();
         }
