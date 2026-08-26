@@ -394,7 +394,10 @@ kitchen.onclick = () => {
 let screenHistory = []; 
 
 /*미니게임 설명 이미지 3.5초만 나오게*/
-function showGameGuide(image) {
+function showGameGuide(image,ingredint) {
+// 이미실행한 게임이면 이미지 띄우지마
+    if (preppedIngredients[ingredint]) {return;}
+
     gameGuideImage.src = image;
     gameGuide.style.display = "flex";
     setTimeout(() => {
@@ -409,13 +412,13 @@ function openGame(id) {
     kitchen.style.display = "none";
 
     if (id === "lettuceGame") {
-        showGameGuide("images/lettcebord.png");
+        showGameGuide("images/lettcebord.png","lettuce");
     }
     if (id === "tomatoGame") {
-        showGameGuide("images/tomatobord.png");
+        showGameGuide("images/tomatobord.png","tomato");
     }
     if (id === "grillGame") {
-        showGameGuide("images/pattybord.png");
+        showGameGuide("images/pattybord.png","patty");
     }
 
     document.getElementById(id).style.display = "flex";
