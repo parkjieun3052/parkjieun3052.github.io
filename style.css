@@ -7,6 +7,10 @@ body {
   width: 100vw;
   height: 100vh;
 }
+.mainframe{
+    width: 100vw;
+    height: 100vh;
+}
 .border-1px-solid-black {
   border: 1px solid black;
 }
